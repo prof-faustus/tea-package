@@ -74,12 +74,15 @@ BTC_MAGIC = re.compile(r"\b0x(?:f9beb4d9|0b110907|fabfb5da)\b", re.IGNORECASE)
 
 # Private-key material mapped into a canonical/serialized record (encoder scan).
 # Heuristic: an assignment/field that places a secret scalar into a record dict
-# or serialized structure.
+# or serialized structure. Named secret tokens are matched case-insensitively;
+# the bare ECDH secret `S` / tweak `t` are matched CASE-SENSITIVELY and only when
+# assigned (`=`), so prose like "engine's" / "the" never trips the gate.
 SECRET_FIELD = re.compile(
-    r"(?:shared_secret|\bS\b|tweak|priv(?:ate)?[_-]?(?:key|scalar)|sk_once|"
+    r"(?:shared_secret|tweak|priv(?:ate)?[_-]?(?:key|scalar)|sk_once|"
     r"m_payee|master[_-]?priv|ca[_-]?priv|salt_det)",
     re.IGNORECASE,
 )
+SECRET_SCALAR = re.compile(r"=\s*[\w.]*\b[St]\b")  # = S / = ctx.S / = t  (case-sensitive)
 RECORD_SINK = re.compile(
     r"(?:canonical|serializ|encode|record\[|to_cbor|field_id|KEY_DERIVATION|"
     r"KEY_CERTIFICATE)",
@@ -122,6 +125,8 @@ def _is_builder(rel: str) -> bool:
 
 def _is_encoder(rel: str) -> bool:
     low = rel.lower()
+    if "test" in low:  # test files name secrets to prove rejection; not encoders
+        return False
     return any(h in low for h in ENCODER_HINTS)
 
 
@@ -154,7 +159,9 @@ def scan_text(rel: str, text: str) -> list[Finding]:
         if builder and (MN_IF.search(line) or MN_ELSE.search(line) or MN_ENDIF.search(line)):
             out.append(Finding(rel, i, "BRANCHING", "conditional opcode in a locking-script builder"))
         # 6. Private-key material into a canonical record — encoder paths.
-        if encoder and SECRET_FIELD.search(line) and RECORD_SINK.search(line):
+        if encoder and RECORD_SINK.search(line) and (
+            SECRET_FIELD.search(line) or SECRET_SCALAR.search(line)
+        ):
             out.append(Finding(rel, i, "SECRET_IN_RECORD", "private-key material serialized into a record"))
     # P2SH multi-line locking pattern.
     for m in PAT_P2SH_SCRIPT.finditer(text):
