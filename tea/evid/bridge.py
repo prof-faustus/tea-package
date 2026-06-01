@@ -22,6 +22,7 @@ import re
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 DEFAULT_BIN = "/home/craig/engine/target/release/tea-bsv"
 TIMEOUT = 120
@@ -107,6 +108,36 @@ class Bridge:
 
     def reproduce(self) -> str:
         return self.run("reproduce")
+
+    def _engine_path(self, p) -> str:
+        """Translate a Windows path to its /mnt WSL form when running via WSL."""
+        p = str(p)
+        if _runner() and sys.platform == "win32" and re.match(r"^[A-Za-z]:", p):
+            return f"/mnt/{p[0].lower()}{p[2:].replace(chr(92), '/')}"
+        return p
+
+    def anchor(self, notes_path, out_path, *, bsv_anchor_txid_be: str,
+               batch_id: int = 0, anchor_minor_units: int = 1) -> dict:
+        """Fold note bodies into a BSV-canonical Merkle root (Layer A). Returns the batch."""
+        self.run("anchor", "--notes", self._engine_path(notes_path),
+                 "--bsv-anchor-txid-be", bsv_anchor_txid_be,
+                 "--batch-id", str(batch_id),
+                 "--anchor-minor-units", str(anchor_minor_units),
+                 "--out", self._engine_path(out_path))
+        return json.loads(Path(out_path).read_text(encoding="utf-8"))
+
+    def prove(self, batch_path, notes_path, leaf_index: int, out_path) -> dict:
+        """Produce an inclusion bundle for one note in a batch."""
+        self.run("prove", "--batch", self._engine_path(batch_path),
+                 "--notes", self._engine_path(notes_path),
+                 "--leaf-index", str(leaf_index),
+                 "--out", self._engine_path(out_path))
+        return json.loads(Path(out_path).read_text(encoding="utf-8"))
+
+    def verify(self, bundle_path) -> bool:
+        """Verify an inclusion bundle; True iff the engine reports verification OK."""
+        out = self.run("verify", "--bundle", self._engine_path(bundle_path))
+        return "verify OK" in out
 
     def worked_example(self) -> dict:
         out = self.run("worked-example")

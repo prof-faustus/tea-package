@@ -73,3 +73,18 @@ library computes tax, the trial balance balances, settlement clears, and every G
 txn ties to canonical+chain evidence. (Remaining TEST-INT breadth — SupplierBill/
 Payment, FX, credit notes, closed-period — extends incrementally as those events
 are wired in later stages.)
+
+## Stage 3 / 5 detail (bridge + anchoring)
+
+- [x] **Engine bridge (C-EVID)** `tea/evid/bridge.py` — subprocess-only, fail-closed,
+      runs `tea-bsv` in WSL (or direct on Linux); typed errors; secret-guard;
+      contract-pinned (`tests/test_engine_bridge.py`, `vectors/engine_worked_example_v1.json`).
+- [x] **Stage-5 Layer-A anchoring** through the bridge: `anchor` (BSV-canonical
+      Merkle root over note bodies) → `prove` (inclusion proof) → `verify`; a
+      tampered body fails (`tests/test_anchor_pipeline.py`). Migration 0009
+      (`anchor_batch`/`anchor_member`/`merkle_proof`/`proof_shard`).
+- [ ] **Blocked on the engine [DECIDE-0004]:** shared-address derivation (Stage 3),
+      certificate authority (Stage 4), and note *construction* (`build-invoice-note`/
+      `-payment-note`) — the pinned engine does not expose these. Operator chose to
+      **extend the engine**; once a new ref exposes them, wire Stages 3–4 + note build.
+- [ ] Wallet (HD, UTXO, matching), embedded node broadcast/confirm — Stage 5 remainder.
