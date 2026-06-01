@@ -88,7 +88,15 @@ are wired in later stages.)
       payee & payer independently derive the same PK_once (both salt rules),
       deterministic, context-bound, public-only output. DC built by the Package CBOR
       (cross-language boundary). DEC-0004 option 1.
+- [x] **Engine address encoding** — `derive-shared-address` emits `address_text`
+      (P2PKH base58check, `--network`); payee/payer derive the same address.
+- [x] **Derivation persistence schema** — migrations 0010 (`wallet.wallet`/`address`)
+      + 0019–0023 (`counterparty`, `counterparty_invoice_seq`, `derivation_config`,
+      `wallet.address` shared-ECDH columns + one-time-context unique index + binding
+      trigger, `KEY_DERIVATION` record type). `tests/sql/test_derivation_persistence.sql`:
+      a SHARED_ECDH address must bind to a chained `KEY_DERIVATION` of the same entity,
+      carry the complete context, and be unique per context (REQ-DATA-0163/0165). DEC-0006.
 - [ ] **Still on the engine track [DEC-0004]:** certificate authority (Stage 4) and
-      note *construction* (`build-invoice-note`/`-payment-note`, per-field `commit`) —
-      added to the engine the same way, then wired.
-- [ ] Wallet (HD, UTXO, matching), embedded node broadcast/confirm — Stage 5 remainder.
+      note *construction* (`build-invoice-note`/`-payment-note`, per-field `commit`).
+- [ ] `KEY_DERIVATION` canonical record layout in `records.py` + the
+      derive→record→`wallet.address` application flow (next), then wallet/node/matching.

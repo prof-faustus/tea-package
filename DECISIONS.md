@@ -106,3 +106,21 @@ certificate ops (`issue`/`revoke`/`verify-certificate`) for note construction
 this work is **public** — that is the default and the only visibility used unless
 explicitly told otherwise for a specific repo. The TEA Package repo is published
 public; future repos follow suit without asking.
+
+## DEC-0006 — SHARED_ECDH address binding: DB trigger does structural binding, full field-equality at the app/recon layers (2026-06-01)
+
+**Context.** REQ-DATA-0165 asks the `wallet.address` insert trigger to verify the
+*decoded* `derived_pubkey`/`address_text` of the referenced `KEY_DERIVATION`
+canonical record equal the row's `pubkey`/`address_text`. The canonical record is
+deterministic CBOR; decoding CBOR fields inside a `plpgsql` trigger is impractical.
+
+**Decision.** The DB trigger (`wallet.fn_shared_address_binding`) enforces the
+*structural* binding it can reliably check: the referenced record exists, is of
+type `KEY_DERIVATION`, belongs to the same entity, and is present in
+`evid.audit_chain` (REQ-WIRE-0136). The **field-equality** is guaranteed at the
+**application encoder layer** — the Package builds the `wallet.address` row and the
+`KEY_DERIVATION` canonical record from the *same* engine `derive-shared-address`
+output in one DB transaction (REQ-ARCH-0086) — and is **re-verified cryptographically
+in reconciliation** (`tea-bsv verify` in audit mode, REQ-DATA-0169). This keeps the
+DB guard sound without a CBOR decoder in SQL; the four-layer encoder/bridge/recon
+defence still covers the equality. Tested by `tests/sql/test_derivation_persistence.sql`.
