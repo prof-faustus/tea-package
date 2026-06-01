@@ -6,7 +6,7 @@ its exit gate is green. No stage proceeds on an unverified lower layer.
 
 | Stage | Scope | Exit gate | Status |
 |---|---|---|---|
-| 0 | environment, gates, engine | prohibition gate green on the tree; engine selftest/reproduce green; DB reachable | **in progress** |
+| 0 | environment, gates, engine | prohibition gate green on the tree; engine selftest/reproduce green; DB reachable | **COMPLETE** |
 | 1 | canonical serialization + chain | canonical vectors reproduce byte-for-byte; chain append/verify/immutability green | pending |
 | 2 | GL integration | TEST-INT-0001..0014; reports tie out and balance | pending |
 | 3 | master keys, derivation, salt | TEST-WIRE/PROP/EVID derivation set; worked vector reproduces | pending |
@@ -24,5 +24,19 @@ its exit gate is green. No stage proceeds on an unverified lower layer.
 - [x] Engine integrated: built at pinned ref `52834be`; `selftest` 5/5 +
       `reproduce` 3/3 **green** (executed in WSL); `TEA_BSV_BIN` resolved from
       workspace `[[bin]]`; contract snapshot captured under `contract/`.
-- [~] PostgreSQL 16 + pgcrypto reachable (install/configure running in WSL).
-- [ ] Stage 0 exit gate verified.
+- [x] PostgreSQL + pgcrypto reachable: user-owned cluster `127.0.0.1:5455`
+      (pg18 dev; deploy/CI pin `postgres:16` — DEC-0003); `pgcrypto` digest
+      self-check correct.
+- [x] **Stage 0 exit gate verified:** prohibition gate green on the tree;
+      engine `selftest` 5/5 + `reproduce` 3/3 green; DB reachable with `pgcrypto`.
+
+## Stage 1 detail (started)
+
+- [x] `tea/wire/cbor.py` — deterministic CBOR core (RFC 8949 §4.2 + Package
+      constraints); 69 vector/rule tests green.
+- [x] `tea/wire/records.py` — field-id registry, strict validation, canonical
+      hashing + audit-chain entry hash; 11 tests green.
+- [ ] Reproducibility vectors (REQ-WIRE-0100/0101) + `reproduce` test.
+- [ ] Migrations 0001–0007 (core schemas, `canonical_record`, `audit_chain`) +
+      trigger bodies; TEST-DATA-0001..0006/0050..0055.
+- [ ] Cross-language vectors vs engine (REQ-WIRE-0102) — contract stage.

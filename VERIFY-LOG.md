@@ -50,8 +50,28 @@ reading the source or by execution (HARD RULE: never assume).
   the production/demo deployment runs the engine in a Linux container (section 09),
   so the Linux execution path is the deployed path. See DEC-0001.
 
-## V-DB-0001 — PostgreSQL 16 availability (2026-06-01)
+## V-DB-0001 — Package development database (2026-06-01)
 
-- WSL2 Ubuntu 24.04 offers `postgresql-16` 16.14 via apt. Host has no Docker and
-  no native Postgres. The DB is stood up in WSL with `pgcrypto`; reachable from
-  the Windows host at `localhost:5432`. **In progress** (Stage 0 step 3).
+- **Reachable + pgcrypto: CONFIRMED.** A **user-owned** PostgreSQL cluster
+  (`initdb`/`pg_ctl`, no sudo, no docker) runs at `127.0.0.1:5455`, database/role
+  `tea`, trust auth on localhost. `CREATE EXTENSION pgcrypto` succeeds; a digest
+  self-check returns the correct SHA-256 of `"x"`
+  (`2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881`). Stood up
+  by `tools/pg_user_cluster.sh`.
+- **Version caveat (honest).** The cluster is **PostgreSQL 18.4**, not 16, because
+  only pg18 server binaries are installed and the environment cannot provide pg16
+  non-interactively: the Docker daemon is unresponsive (a wedged `docker pull`)
+  and passwordless `sudo` is unavailable (`sudo -n` → "a password is required"),
+  so neither `docker run postgres:16` nor `apt install postgresql-16` can be
+  completed here. See DEC-0003.
+- **Spec compliance.** The spec pins PostgreSQL **16**; that pin is honoured in the
+  deploy/CI image (`postgres:16`, section 09 docker-compose), which is where the
+  version actually ships and where the Stage-7 acceptance cold-up runs. The
+  Package SQL is written to the 16/18-portable subset (standard DDL, `plpgsql`
+  triggers, `pgcrypto`); any 16-specific behaviour is validated in Stage 7 against
+  `postgres:16`.
+- **Environment note.** Stuck root processes from the earlier `sudo apt-get
+  update` (network-hung ~38 min) and `docker pull` remain; they are harmless to
+  the user cluster and require the operator's `sudo` to reap.
+
+Connection DSN (dev): `postgresql://tea:tea@127.0.0.1:5455/tea` (see `.env.example`).

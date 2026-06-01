@@ -43,3 +43,23 @@ stable toolchain. The binary name `tea-bsv` is read from the engine workspace
 `core.component_version`; this is the current HEAD of the authoritative engine
 repo, verified locally to build and to pass `selftest`/`reproduce`. See
 `VERIFY-LOG.md` V-ENGINE-0001.
+
+## DEC-0003 — Development database version (2026-06-01)
+
+**Decision.** Local development runs against a **user-owned PostgreSQL 18.4**
+cluster (`tools/pg_user_cluster.sh`, `127.0.0.1:5455`, `pgcrypto` enabled). The
+spec-pinned **PostgreSQL 16** is honoured in the deploy/CI image (`postgres:16`,
+section 09 docker-compose) and in the Stage-7 acceptance cold-up.
+
+**Rationale.** The environment cannot provide pg16 non-interactively: the Docker
+daemon is unresponsive (a wedged `docker pull postgres:16`) and passwordless
+`sudo` is unavailable, so neither a `postgres:16` container nor an
+`apt install postgresql-16` cluster can be completed. Only pg18 server binaries
+are installed, which a user can `initdb` without sudo. pg18 is a superset of the
+SQL the Package uses; all migrations/triggers are kept to the 16/18-portable
+subset, and pg16-specific behaviour is validated in Stage 7 against `postgres:16`.
+
+**Follow-up (operator).** When `sudo`/Docker are available, switch dev to a
+`postgres:16` container (or native pg16 cluster) by pointing `TEA_DB_DSN` at it —
+no Package code changes. The earlier hung `apt`/`docker pull` root processes need
+the operator's `sudo` to reap.
