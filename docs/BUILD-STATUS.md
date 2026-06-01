@@ -8,7 +8,7 @@ its exit gate is green. No stage proceeds on an unverified lower layer.
 |---|---|---|---|
 | 0 | environment, gates, engine | prohibition gate green on the tree; engine selftest/reproduce green; DB reachable | **COMPLETE** |
 | 1 | canonical serialization + chain | canonical vectors reproduce byte-for-byte; chain append/verify/immutability green | pending |
-| 2 | GL integration | TEST-INT-0001..0014; reports tie out and balance | pending |
+| 2 | GL integration | TEST-INT-0001..0014; reports tie out and balance | **in progress** |
 | 3 | master keys, derivation, salt | TEST-WIRE/PROP/EVID derivation set; worked vector reproduces | pending |
 | 4 | certificate authority | TEST-SEC-0120..0132, TEST-EVID-0013; cert vector reproduces | pending |
 | 5 | wallet, node, matching | TEST-WALLET/E2E/REORG | pending |
@@ -50,3 +50,15 @@ its exit gate is green. No stage proceeds on an unverified lower layer.
 **Stage 1 exit gate: MET** — canonical vectors reproduce byte-for-byte; chain
 append/verify/immutability tests green. (Cross-language-vs-engine vectors land
 with the bridge in Stage 3.)
+
+## Stage 2 detail (started)
+
+- [x] `python-accounting` 1.0.1 pinned; installed (Windows Anaconda) reaching the
+      WSL DB on 127.0.0.1:5455.
+- [x] Migration 0008 (`evid.note` + `evid.lineage` spine).
+- [x] GL bootstrap (`tools/gl_bootstrap.py`): `create_all` into the `gl` schema
+      via `search_path=gl` (library unmodified, REQ-DATA-0003); 14 GL tables
+      created; exact version recorded in `core.component_version` (REQ-DATA-0020/0140).
+- [ ] GL posting service (ClientInvoice/SupplierBill/ClientReceipt/JournalEntry
+      through the library only, REQ-DATA-0210..0214) + lineage wiring.
+- [ ] Integration tests TEST-INT-0001..0014 (reports tie out and balance).

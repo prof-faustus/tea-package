@@ -6,3 +6,8 @@
 #
 # Stage 0 introduces no runtime third-party dependency beyond the standard
 # library; the engine is consumed as an external binary via subprocess.
+
+# Stage 2 — GL core (REQ-DATA-0020). python-accounting owns the gl schema; it
+# pulls psycopg2 + python-dateutil + strenum + toml transitively.
+python-accounting==1.0.1
+SQLAlchemy==2.0.50
