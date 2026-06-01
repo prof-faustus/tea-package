@@ -64,8 +64,8 @@ def _runner() -> list[str]:
 class Bridge:
     """Strict, fail-closed wrapper over the pinned `tea-bsv` binary."""
 
-    SUBCOMMANDS = ("selftest", "reproduce", "worked-example", "anchor",
-                   "prove", "verify", "query", "disclose", "derive-shared-address")
+    SUBCOMMANDS = ("selftest", "reproduce", "worked-example", "anchor", "prove",
+                   "verify", "query", "disclose", "derive-shared-address", "build-note")
 
     def __init__(self, binary: str | None = None, pinned_version: str | None = None):
         self.binary = binary or os.environ.get("TEA_BSV_BIN", DEFAULT_BIN)
@@ -108,6 +108,19 @@ class Bridge:
 
     def reproduce(self) -> str:
         return self.run("reproduce")
+
+    def build_note(self, *, sk_hex: str, counterparty_pub_hex: str, note_id: str,
+                   fields: list[dict], fields_path, out_path, kind: str = "invoice") -> dict:
+        """Build a signed invoice/payment note (5.3.3/5.3.4). `fields` is a list of
+        {"label","value"} dicts; values stay private (only labels appear in output).
+        Returns the SignedNote (engine-produced; the Package stores it verbatim)."""
+        Path(fields_path).write_text(json.dumps(fields), encoding="utf-8")
+        self.run("build-note", "--sk-hex", sk_hex,
+                 "--counterparty-pub-hex", counterparty_pub_hex,
+                 "--note-id", note_id, "--kind", kind,
+                 "--fields-file", self._engine_path(fields_path),
+                 "--out", self._engine_path(out_path))
+        return json.loads(Path(out_path).read_text(encoding="utf-8"))
 
     def _engine_path(self, p) -> str:
         """Translate a Windows path to its /mnt WSL form when running via WSL."""

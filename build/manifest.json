@@ -4,10 +4,10 @@
   "note": "Pinned refs, toolchains, and component versions sufficient to reproduce the build (REQ-BUILD-0050/0080/0097). Mirrored into core.component_version at bootstrap (REQ-DATA-0143).",
   "engine": {
     "repo": "prof-faustus/triple-entry-evidence-bsv",
-    "ref": "9b219759c05e90ef996b9a76ccb825e3fd8b1fc0",
-    "ref_note": "advanced from 52834be: derive-shared-address CLI (additive-tweak derivation, Stage 3) + P2PKH address_text (base58check). No new crypto primitives. DEC-0004.",
+    "ref": "98a709f5bddb61b5d553a946af7a2f0836b02c8b",
+    "ref_note": "advanced from 52834be: derive-shared-address (Stage 3) + P2PKH address_text + build-note (Stage 5 invoice/payment note construction with per-field commitments). No new crypto primitives. DEC-0004.",
     "bin_name": "tea-bsv",
-    "bin_sha256": "5964a78839f1e95d2e4951cbd590ffe90d4bad199eba1d01aa776d2ec76b5afe",
+    "bin_sha256": "62216853b23711bc0293a5f3f8482ad1ecf8bfc6fe10f7406a56ec9c8a6aad2b",
     "version": "tea-bsv 0.1.0",
     "build_host": "WSL2 Ubuntu 24.04, rustc 1.96.0 (engine rust-toolchain.toml: stable)",
     "selftest": "pass (5/5)",
