@@ -65,7 +65,7 @@ class Bridge:
     """Strict, fail-closed wrapper over the pinned `tea-bsv` binary."""
 
     SUBCOMMANDS = ("selftest", "reproduce", "worked-example", "anchor",
-                   "prove", "verify", "query", "disclose")
+                   "prove", "verify", "query", "disclose", "derive-shared-address")
 
     def __init__(self, binary: str | None = None, pinned_version: str | None = None):
         self.binary = binary or os.environ.get("TEA_BSV_BIN", DEFAULT_BIN)
@@ -138,6 +138,21 @@ class Bridge:
         """Verify an inclusion bundle; True iff the engine reports verification OK."""
         out = self.run("verify", "--bundle", self._engine_path(bundle_path))
         return "verify OK" in out
+
+    def derive_shared_address(self, *, sk_hex: str, remote_pub_hex: str,
+                              payee_pub_hex: str, dc_hex: str,
+                              salt_rule: str = "context") -> dict:
+        """One-time shared-address derivation by the engine (04 §4.20-4.28).
+
+        Returns ONLY public values: derived_pubkey_hex (PK_once), salt_commitment_hex,
+        and the A/B master-key ordering. The engine never emits S/t/salt_det/sk_once
+        (REQ-WIRE-0141); the bridge secret-guard rejects any output that appears to.
+        """
+        out = self.run("derive-shared-address", "--sk-hex", sk_hex,
+                       "--remote-pub-hex", remote_pub_hex,
+                       "--payee-pub-hex", payee_pub_hex,
+                       "--dc-hex", dc_hex, "--salt-rule", salt_rule)
+        return json.loads(out)
 
     def worked_example(self) -> dict:
         out = self.run("worked-example")

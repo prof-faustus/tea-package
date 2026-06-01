@@ -33,9 +33,10 @@ Package code is OS-agnostic Python + SQL + a subprocess bridge to the engine.
 ## DEC-0002 — Engine pinned ref (2026-06-01)
 
 **Decision.** The engine `triple-entry-evidence-bsv` is pinned at commit
-`52834be3c040785095d63090f1e0347ced817516` (repo
-`prof-faustus/triple-entry-evidence-bsv`), built with the engine's pinned Rust
-stable toolchain. The binary name `tea-bsv` is read from the engine workspace
+`0ea91a4732eb4d83a328eaa8904a2c458318db01` (repo
+`prof-faustus/triple-entry-evidence-bsv`, branch `main`; advanced from the
+original `52834be` per DEC-0004 to add `derive-shared-address`), built with the
+engine's pinned Rust stable toolchain. The binary name `tea-bsv` is read from the engine workspace
 `crates/cli/Cargo.toml` `[[bin]]` entry and exported as `TEA_BSV_BIN`
 (REQ-EVID-0030); it is never hardcoded into Package code.
 
@@ -89,9 +90,15 @@ change the work and only the operator can choose:
    verify/disclose, which the engine DOES expose) and defer Stages 3–4 until the
    engine exposes derivation/certificate ops.
 
-**Status.** Bridge (C-EVID) built for the existing surface and contract-pinned
-(`tests/test_engine_bridge.py`). Awaiting the operator's choice on the missing
-operations. Recorded here and in `VERIFY-LOG.md` V-ENGINE-0002.
+**Resolution (operator chose option 1 — extend the engine).** Engine advanced to
+`0ea91a4` adding `derive-shared-address` (additive-tweak one-time-address
+derivation) by exposing existing `bsvcurve` primitives — no new crypto. Stage 3
+derivation is now built and proven (`tests/test_derivation.py`: payee and payer
+independently derive the same PK_once for both salt rules; deterministic;
+context-bound; public-only output). **Still pending** on the same authorised
+track: `build-invoice-note`/`-payment-note`, per-field `commit`, and the
+certificate ops (`issue`/`revoke`/`verify-certificate`) for note construction
+(Stage 5) and the certificate authority (Stage 4) — to be added the same way.
 
 ## DEC-0005 — Git repositories are PUBLIC by default (2026-06-01)
 

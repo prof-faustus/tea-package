@@ -83,8 +83,12 @@ are wired in later stages.)
       Merkle root over note bodies) → `prove` (inclusion proof) → `verify`; a
       tampered body fails (`tests/test_anchor_pipeline.py`). Migration 0009
       (`anchor_batch`/`anchor_member`/`merkle_proof`/`proof_shard`).
-- [ ] **Blocked on the engine [DECIDE-0004]:** shared-address derivation (Stage 3),
-      certificate authority (Stage 4), and note *construction* (`build-invoice-note`/
-      `-payment-note`) — the pinned engine does not expose these. Operator chose to
-      **extend the engine**; once a new ref exposes them, wire Stages 3–4 + note build.
+- [x] **Stage-3 shared-address derivation** — engine extended (ref `0ea91a4`) with
+      `derive-shared-address` (additive tweak `M+t·G`); `tests/test_derivation.py`:
+      payee & payer independently derive the same PK_once (both salt rules),
+      deterministic, context-bound, public-only output. DC built by the Package CBOR
+      (cross-language boundary). DEC-0004 option 1.
+- [ ] **Still on the engine track [DEC-0004]:** certificate authority (Stage 4) and
+      note *construction* (`build-invoice-note`/`-payment-note`, per-field `commit`) —
+      added to the engine the same way, then wired.
 - [ ] Wallet (HD, UTXO, matching), embedded node broadcast/confirm — Stage 5 remainder.
