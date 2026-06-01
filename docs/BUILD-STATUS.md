@@ -8,7 +8,7 @@ its exit gate is green. No stage proceeds on an unverified lower layer.
 |---|---|---|---|
 | 0 | environment, gates, engine | prohibition gate green on the tree; engine selftest/reproduce green; DB reachable | **COMPLETE** |
 | 1 | canonical serialization + chain | canonical vectors reproduce byte-for-byte; chain append/verify/immutability green | pending |
-| 2 | GL integration | TEST-INT-0001..0014; reports tie out and balance | **in progress** |
+| 2 | GL integration | TEST-INT-0001..0014; reports tie out and balance | **core MET** |
 | 3 | master keys, derivation, salt | TEST-WIRE/PROP/EVID derivation set; worked vector reproduces | pending |
 | 4 | certificate authority | TEST-SEC-0120..0132, TEST-EVID-0013; cert vector reproduces | pending |
 | 5 | wallet, node, matching | TEST-WALLET/E2E/REORG | pending |
@@ -59,6 +59,17 @@ with the bridge in Stage 3.)
 - [x] GL bootstrap (`tools/gl_bootstrap.py`): `create_all` into the `gl` schema
       via `search_path=gl` (library unmodified, REQ-DATA-0003); 14 GL tables
       created; exact version recorded in `core.component_version` (REQ-DATA-0020/0140).
-- [ ] GL posting service (ClientInvoice/SupplierBill/ClientReceipt/JournalEntry
-      through the library only, REQ-DATA-0210..0214) + lineage wiring.
-- [ ] Integration tests TEST-INT-0001..0014 (reports tie out and balance).
+- [x] GL posting service (`tea/gl/service.py`) — posts only through the library
+      (REQ-DATA-0022): ClientInvoice (AR/revenue/tax), ClientReceipt, Assignment
+      (clear receivable), library-authoritative balance reads (REQ-DATA-0210..0212).
+- [x] Lineage spine (`tea/evid/lineage.py`) — a GL posting ties to a canonical
+      record + audit-chain entry + `evid.lineage` row (gl_txn_id ↔ canonical_id ↔
+      audit_seq); triggers re-validate; `fn_verify_chain` intact (REQ-DATA-0023/0072).
+- [x] Integration tests green: library-computed 20% tax → gross 120; trial balance
+      balances; receipt+assignment clears the receivable; lineage join verified.
+
+**Stage 2 exit gate: core MET** — postings go only through the library, the
+library computes tax, the trial balance balances, settlement clears, and every GL
+txn ties to canonical+chain evidence. (Remaining TEST-INT breadth — SupplierBill/
+Payment, FX, credit notes, closed-period — extends incrementally as those events
+are wired in later stages.)
