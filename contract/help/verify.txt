@@ -1,0 +1,5 @@
+Usage: tea-bsv verify --bundle <BUNDLE>
+
+Options:
+      --bundle <BUNDLE>  
+  -h, --help             Print help

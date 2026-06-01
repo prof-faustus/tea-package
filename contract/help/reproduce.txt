@@ -1,0 +1,4 @@
+Usage: tea-bsv reproduce
+
+Options:
+  -h, --help  Print help

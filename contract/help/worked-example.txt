@@ -1,0 +1,4 @@
+Usage: tea-bsv worked-example
+
+Options:
+  -h, --help  Print help

@@ -1,0 +1,18 @@
+Triple-entry evidence on BSV
+
+Usage: tea-bsv <COMMAND>
+
+Commands:
+  selftest        
+  reproduce       
+  worked-example  
+  anchor          
+  prove           
+  verify          
+  query           
+  disclose        
+  help            Print this message or the help of the given subcommand(s)
+
+Options:
+  -h, --help     Print help
+  -V, --version  Print version

@@ -1,0 +1,5 @@
+Usage: tea-bsv query [OPTIONS]
+
+Options:
+      --n <N>  Number of synthetic leaves to anchor in the proofstore demo [default: 64]
+  -h, --help   Print help

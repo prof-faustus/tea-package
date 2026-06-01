@@ -1,0 +1,8 @@
+Usage: tea-bsv prove --batch <BATCH> --notes <NOTES> --leaf-index <LEAF_INDEX> --out <OUT>
+
+Options:
+      --batch <BATCH>            
+      --notes <NOTES>            
+      --leaf-index <LEAF_INDEX>  
+      --out <OUT>                
+  -h, --help                     Print help

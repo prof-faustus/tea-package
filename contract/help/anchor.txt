@@ -1,0 +1,9 @@
+Usage: tea-bsv anchor [OPTIONS] --notes <NOTES> --bsv-anchor-txid-be <BSV_ANCHOR_TXID_BE> --out <OUT>
+
+Options:
+      --notes <NOTES>                            JSON file containing an array of signed notes
+      --bsv-anchor-txid-be <BSV_ANCHOR_TXID_BE>  Display-orientation BSV txid that carries the root
+      --anchor-minor-units <ANCHOR_MINOR_UNITS>  Anchor output amount in minor units [default: 1]
+      --batch-id <BATCH_ID>                      [default: 0]
+      --out <OUT>                                
+  -h, --help                                     Print help

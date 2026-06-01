@@ -19,9 +19,10 @@ its exit gate is green. No stage proceeds on an unverified lower layer.
 
 - [x] Repo scaffold + git + CI skeleton (prohibition gate runs first).
 - [x] Layer-1 prohibition gate (`tools/prohibition_gate.py`) + known-bad
-      self-tests (TEST-BUILD-0001..0006) + clean-tree assertion.
-- [ ] Toolchains/locks/component versions pinned (build manifest).
-- [ ] Engine integrated: built at pinned ref; `selftest` + `reproduce` green;
-      `TEA_BSV_BIN` resolved from workspace; contract snapshot captured.
-- [ ] PostgreSQL 16 + pgcrypto reachable.
+      self-tests (TEST-BUILD-0001..0006) + clean-tree assertion. **10/10 pass.**
+- [x] Toolchains/locks/component versions pinned (`build/manifest.json`).
+- [x] Engine integrated: built at pinned ref `52834be`; `selftest` 5/5 +
+      `reproduce` 3/3 **green** (executed in WSL); `TEA_BSV_BIN` resolved from
+      workspace `[[bin]]`; contract snapshot captured under `contract/`.
+- [~] PostgreSQL 16 + pgcrypto reachable (install/configure running in WSL).
 - [ ] Stage 0 exit gate verified.

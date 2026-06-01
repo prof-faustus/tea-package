@@ -1,0 +1,15 @@
+Usage: tea-bsv disclose [OPTIONS] --sk-hex <SK_HEX> --note-id <NOTE_ID> --field-label <FIELD_LABEL> --field-value <FIELD_VALUE> --k-field-hex <K_FIELD_HEX> --verifier-id <VERIFIER_ID> --engagement-id <ENGAGEMENT_ID> --purpose <PURPOSE> --expiry-unix <EXPIRY_UNIX> --out <OUT>
+
+Options:
+      --sk-hex <SK_HEX>                
+      --note-id <NOTE_ID>              
+      --field-label <FIELD_LABEL>      
+      --field-value <FIELD_VALUE>      
+      --k-field-hex <K_FIELD_HEX>      
+      --verifier-id <VERIFIER_ID>      
+      --engagement-id <ENGAGEMENT_ID>  
+      --purpose <PURPOSE>              
+      --expiry-unix <EXPIRY_UNIX>      
+      --nonce-hex <NONCE_HEX>          [default: 00000000000000000000000000000000]
+      --out <OUT>                      
+  -h, --help                           Print help

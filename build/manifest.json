@@ -1,0 +1,26 @@
+{
+  "schema": "tea-package-build-manifest/v1",
+  "generated": "2026-06-01",
+  "note": "Pinned refs, toolchains, and component versions sufficient to reproduce the build (REQ-BUILD-0050/0080/0097). Mirrored into core.component_version at bootstrap (REQ-DATA-0143).",
+  "engine": {
+    "repo": "prof-faustus/triple-entry-evidence-bsv",
+    "ref": "52834be3c040785095d63090f1e0347ced817516",
+    "bin_name": "tea-bsv",
+    "bin_sha256": "fd232e377cabd317dfca95bb8e50080a232bd439981af4f1e0e41201815b7473",
+    "version": "tea-bsv 0.1.0",
+    "build_host": "WSL2 Ubuntu 24.04, rustc 1.96.0 (engine rust-toolchain.toml: stable)",
+    "selftest": "pass (5/5)",
+    "reproduce": "pass (3/3 vectors: merkle.bsv_block.v1, tea.worked_example.v1, study.simstudy.v1)",
+    "run_note": "The Windows .exe will not execute under the harness shells (V-ENV-0001); the engine is built and run in WSL/Linux, which is the deployed (container) execution path."
+  },
+  "toolchains": {
+    "python": "3.12 (Anaconda; spec requires 3.11+)",
+    "rust": "stable (engine rust-toolchain.toml); rustc 1.96.0 used",
+    "postgresql": "16 (WSL2 Ubuntu)"
+  },
+  "components": {
+    "python-accounting": "pinned in Stage 2",
+    "bsv-sdk": "pinned in Stage 5",
+    "embedded-node": "pinned in Stage 5"
+  }
+}

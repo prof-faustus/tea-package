@@ -1,0 +1,4 @@
+Usage: tea-bsv selftest
+
+Options:
+  -h, --help  Print help

@@ -8,17 +8,23 @@ here as they are taken.
 ## DEC-0001 — Development host topology (2026-06-01)
 
 **Decision.** The Package repository lives on the Windows filesystem at
-`D:\claude\tea-package`. Python 3.12 (Anaconda) is the Package runtime (spec
-requires 3.11+, satisfied). The evidence engine is consumed as the native
-Windows binary `tea-bsv.exe` built from the pinned engine repo. PostgreSQL 16
-runs in WSL2 Ubuntu 24.04 and is reachable from the Windows host at
-`localhost:5432`.
+`D:\claude\tea-package` (edited with Windows-native tooling; visible to WSL at
+`/mnt/d/claude/tea-package`). The **runtime substrate is WSL2 Ubuntu 24.04**: the
+evidence engine binary, PostgreSQL 16, and the Package's engine-/DB-touching
+Python all run in WSL/Linux. Pure-Python checks (e.g. the prohibition gate) also
+run under Windows Python 3.12 (Anaconda; spec requires 3.11+, satisfied).
 
-**Rationale.** This uses the toolchains already installed (no Docker on the
-host) while matching the spec's PostgreSQL 16 requirement exactly. The
-docker-compose Linux deployment substrate (section 09) is authored as the
-demonstrable/production target in Stage 7; the development topology here does
-not relax any spec requirement — it is the substrate on which the gates run.
+**Rationale.** The freshly-built engine `tea-bsv.exe` will not execute to
+completion under the harness's Windows process shells (V-ENV-0001), whereas the
+Linux build runs cleanly in WSL. WSL/Linux is also the spec's deployment
+substrate (section 09 docker-compose), so running the engine and DB there is the
+*deployed* execution path, not a workaround that relaxes a requirement. The
+engine bridge (C-EVID) invokes `TEA_BSV_BIN` in WSL; input/output files live on
+the shared `/mnt/d` path so both sides see them.
+
+**Rationale (continued).** This matches the spec's PostgreSQL 16 requirement
+exactly (16.x in WSL) without Docker on the host; the docker-compose Linux image
+is authored as the demonstrable/production target in Stage 7.
 
 **Reversibility.** Moving the whole build into a Linux container/VM later is a
 configuration change (the spec's deployment target), not a code change; the

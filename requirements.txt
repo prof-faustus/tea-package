@@ -1,0 +1,8 @@
+# Runtime dependencies (pinned; hashes added as the set stabilises in Stage 1+).
+# CI installs from locks only (REQ-BUILD-0002). The prohibition gate scans this
+# file for BTC tooling (REQ-BUILD-0021). The GL core (python-accounting), the
+# web/API stack (FastAPI), and the DB driver are added in their stages
+# (2, 6) with their pinned versions recorded in core.component_version.
+#
+# Stage 0 introduces no runtime third-party dependency beyond the standard
+# library; the engine is consumed as an external binary via subprocess.
