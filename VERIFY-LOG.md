@@ -50,6 +50,16 @@ reading the source or by execution (HARD RULE: never assume).
   the production/demo deployment runs the engine in a Linux container (section 09),
   so the Linux execution path is the deployed path. See DEC-0001.
 
+## V-ENGINE-0002 — engine CLI surface vs Stage 3–4 needs (2026-06-01)
+
+- **Verified by reading source** (`crates/cli/src/main.rs` at `52834be`): the CLI
+  `Cmd` enum is exactly `Selftest, Reproduce, WorkedExample, Anchor, Prove, Verify,
+  Query, Disclose`. No derivation/note-build/commit/certificate command exists.
+- **Consequence.** The bridge (C-EVID, `tea/evid/bridge.py`) is built and
+  contract-pinned for this real surface. Stages 3–4 need engine operations that
+  are not present; resolving this is an operator `[DECIDE]` — see DEC-0004. Not
+  guessed, not faked, not worked around by reimplementing crypto in the Package.
+
 ## V-DB-0001 — Package development database (2026-06-01)
 
 - **Reachable + pgcrypto: CONFIRMED.** A **user-owned** PostgreSQL cluster

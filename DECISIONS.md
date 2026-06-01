@@ -63,3 +63,39 @@ subset, and pg16-specific behaviour is validated in Stage 7 against `postgres:16
 `postgres:16` container (or native pg16 cluster) by pointing `TEA_DB_DSN` at it —
 no Package code changes. The earlier hung `apt`/`docker pull` root processes need
 the operator's `sudo` to reap.
+
+## DEC-0004 — Engine CLI surface gap for Stages 3–4 (2026-06-01) — OPEN [DECIDE]
+
+**Finding (verified, not assumed).** The pinned engine `52834be`
+(`crates/cli/src/main.rs`) exposes exactly: `selftest, reproduce, worked-example,
+anchor, prove, verify, query, disclose`. It does **not** expose
+`derive-shared-address`, `derive-shared-privkey`, `build-invoice-note`,
+`build-payment-note`, a per-field `commit`, or the certificate operations
+(`issue`/`revoke`/`verify-certificate`). Stage 3 (master-key shared-address
+derivation, 04 §4.20–4.28) and Stage 4 (certificate authority, 10 §10.20–10.26)
+require those operations to be performed **by the engine** — the Package MUST NOT
+reimplement the EC/HKDF/tweak crypto (REQ-EVID-0002/0097) and MUST NOT modify the
+engine source (REQ-EVID-0002).
+
+**Why this is a decision, not something to guess.** Three options materially
+change the work and only the operator can choose:
+1. **Extend the engine** repo (`prof-faustus/triple-entry-evidence-bsv`) with the
+   missing CLI commands that expose its existing `bsvcurve`/`tea`/`disclosure`
+   crates (ECDH, HKDF, additive tweak `M + t·G`, per-field commit, certificate
+   signing). This is engine-owned work; it does not reimplement primitives in the
+   Package, but it does mean the engine ref advances past `52834be`.
+2. **Point to a newer engine ref** that already exposes these operations.
+3. **Proceed on the supported surface first** — build Stage 5 (anchor/prove/
+   verify/disclose, which the engine DOES expose) and defer Stages 3–4 until the
+   engine exposes derivation/certificate ops.
+
+**Status.** Bridge (C-EVID) built for the existing surface and contract-pinned
+(`tests/test_engine_bridge.py`). Awaiting the operator's choice on the missing
+operations. Recorded here and in `VERIFY-LOG.md` V-ENGINE-0002.
+
+## DEC-0005 — Git repositories are PUBLIC by default (2026-06-01)
+
+**Decision.** Per the operator's instruction, every Git repository created for
+this work is **public** — that is the default and the only visibility used unless
+explicitly told otherwise for a specific repo. The TEA Package repo is published
+public; future repos follow suit without asking.
