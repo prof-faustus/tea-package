@@ -170,7 +170,30 @@ _FIELDS = {
         60: _int,           # amount_minor
         61: _hash32,        # txid (LE)
     },
+    # KEY_DERIVATION (04 §4.18, ids 64-79). The common envelope (0-4) carries
+    # scheme_version and entity_uid (the §4.18 ids 64/68 restate those, supplied
+    # once via the envelope — DEC-0007); the type-specific fields are 65-74. Carries
+    # ONLY public values + the salt commitment; never S/t/salt_det/private scalar
+    # (REQ-WIRE-0141; structurally guaranteed because unknown ids are rejected).
+    RT_KEY_DERIVATION: {
+        65: _uint,          # domain: 0=MASTER_REGISTRATION,1=PAYMENT_ADDRESS,2=INVOICE_NOTE_KEY,3=PAYMENT_NOTE_KEY,4=MESSAGE_KEY
+        66: _pubkey,        # master_pub_A (canonical smaller)
+        67: _pubkey,        # master_pub_B (canonical larger)
+        69: _uint,          # invoice_number
+        70: _uint,          # payment_index
+        71: _pubkey,        # derived_pubkey (PK_once)
+        72: _hash32,        # salt_commitment
+        73: _tstr,          # address_text (PAYMENT_ADDRESS; omitted for key-only domains)
+        74: _bstr(16),      # counterparty_uid
+    },
 }
+
+# KEY_DERIVATION domains (field 65)
+KD_MASTER_REGISTRATION = 0
+KD_PAYMENT_ADDRESS = 1
+KD_INVOICE_NOTE_KEY = 2
+KD_PAYMENT_NOTE_KEY = 3
+KD_MESSAGE_KEY = 4
 
 # required fields per type (envelope always required).
 _REQUIRED = {
@@ -178,6 +201,10 @@ _REQUIRED = {
     RT_PAYMENT: {32, 33, 35, 36, 37, 38, 40},
     RT_MESSAGE: {48, 49, 50},
     RT_WALLET_TRANSFER: {56, 57, 58, 60},
+    # domain (65), master A/B (66/67), derived_pubkey (71), salt_commitment (72)
+    # are always required; invoice_number/payment_index/address_text/counterparty_uid
+    # are domain-dependent and enforced by the application.
+    RT_KEY_DERIVATION: {65, 66, 67, 71, 72},
 }
 
 

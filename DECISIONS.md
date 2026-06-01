@@ -124,3 +124,21 @@ output in one DB transaction (REQ-ARCH-0086) — and is **re-verified cryptograp
 in reconciliation** (`tea-bsv verify` in audit mode, REQ-DATA-0169). This keeps the
 DB guard sound without a CBOR decoder in SQL; the four-layer encoder/bridge/recon
 defence still covers the equality. Tested by `tests/sql/test_derivation_persistence.sql`.
+
+## DEC-0007 — KEY_DERIVATION canonical layout: envelope + type fields 65–74 (2026-06-01)
+
+**Context.** §4.18 lists the KEY_DERIVATION record (record_type=8) with field ids
+64–79, including `64=scheme_version` and `68=entity_uid`. §4.4.1/§4.12 define a
+common envelope (ids 0–4: schema_version, record_type, entity_uid, logical_key,
+created_at) that applies to **all** record types. The §4.18 ids 64/68 therefore
+overlap the envelope's 0/2.
+
+**Decision.** A KEY_DERIVATION canonical record carries the common envelope (0–4)
+**plus** the type-specific fields **65–74** (domain, master_pub_A/B, invoice_number,
+payment_index, derived_pubkey, salt_commitment, address_text, counterparty_uid).
+`scheme_version` and `entity_uid` are supplied **once** via the envelope (ids 0/2);
+the §4.18 64/68 entries are read as the partition restating those envelope values,
+not as a second copy. This avoids a redundant/conflicting double-encoding while
+satisfying both sections. The encoder/decoder are symmetric and round-trip-checked;
+`tests/test_derivation_flow.py` pins the layout end-to-end. If the spec author
+intends 64/68 physically present, it is a one-line registry change.
