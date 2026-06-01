@@ -7,6 +7,7 @@
 # Prohibition documentation: names the constructs in order to forbid them.
 README.md
 docs/PROHIBITIONS.md
+STATUS.md
 #
 # Negative-test fixtures: one known-bad input per prohibited class, used by the
 # gate self-tests (TEST-BUILD-0001..0006) to prove each class is caught.

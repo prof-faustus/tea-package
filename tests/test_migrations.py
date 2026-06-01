@@ -42,7 +42,10 @@ def test_migrate_and_chain_triggers():
     except (FileNotFoundError, subprocess.TimeoutExpired) as e:
         pytest.skip(f"migrate runner unavailable: {e}")
     out = proc.stdout + proc.stderr
-    if proc.returncode != 0 and "could not connect" in out.lower():
+    low = out.lower()
+    if proc.returncode != 0 and any(s in low for s in (
+            "could not connect", "connection refused", "connection to server",
+            "is the server running")):
         pytest.skip("database not reachable")
     assert "MIGRATE-AND-TEST: OK" in out, out
     assert "ALL-CHAIN-TESTS-PASSED" in out, out
