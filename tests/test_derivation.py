@@ -57,6 +57,8 @@ def test_payee_and_payer_derive_same_one_time_address(salt_rule):
                                     payee_pub_hex=pk_a, dc_hex=dc, salt_rule=salt_rule)
 
     assert payee["derived_pubkey_hex"] == payer["derived_pubkey_hex"]      # same PK_once
+    assert payee["address_text"] == payer["address_text"]                  # same P2PKH address
+    assert payee["address_text"]                                           # non-empty
     assert payee["salt_commitment_hex"] == payer["salt_commitment_hex"]
     assert len(payee["derived_pubkey_hex"]) == 66                          # 33-byte compressed
     # the engine's A/B ordering matches the Package's CBOR ordering
