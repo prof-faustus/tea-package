@@ -1,0 +1,22 @@
+# Prohibition-gate content allowlist (REQ-BUILD-0020).
+# Each path here is content-exempt from the static prohibition scan because it
+# must NAME a prohibited construct in order to test or document its rejection.
+# Adding a path is a reviewed change requiring a second approver (REQ-BUILD-0020).
+# Paths are repo-relative, forward-slash, exact-match.
+#
+# Prohibition documentation: names the constructs in order to forbid them.
+README.md
+docs/PROHIBITIONS.md
+#
+# Negative-test fixtures: one known-bad input per prohibited class, used by the
+# gate self-tests (TEST-BUILD-0001..0006) to prove each class is caught.
+tests/fixtures/prohibition/bad_op_return.txt
+tests/fixtures/prohibition/bad_p2sh.txt
+tests/fixtures/prohibition/bad_btc_import.py
+tests/fixtures/prohibition/bad_btc_lockfile.txt
+tests/fixtures/prohibition/bad_timelock_builder.py
+tests/fixtures/prohibition/bad_branching_cert_builder.py
+tests/fixtures/prohibition/bad_secret_in_record_encoder.py
+tests/fixtures/prohibition/good_clean_builder.py
+# The gate self-test references the prohibited class names in its assertions.
+tests/test_prohibition_gate.py

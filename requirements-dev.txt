@@ -1,0 +1,4 @@
+# Development/test dependencies (pinned). CI installs from locks only
+# (REQ-BUILD-0002). Hashes are added when the dependency set stabilises in
+# Stage 1+; the prohibition gate scans this file for BTC tooling (REQ-BUILD-0021).
+pytest==8.3.5

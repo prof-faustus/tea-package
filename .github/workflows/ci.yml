@@ -1,0 +1,45 @@
+# CI pipeline (REQ-BUILD-0070). Stages run in order, each gating the next; any
+# stage failure fails the build. The prohibition gate (Layer 1) runs BEFORE all
+# tests and fails fast (REQ-BUILD-0022). This skeleton grows stage by stage with
+# the build order; gates are added as their subsystems land — never relaxed.
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  prohibition-gate:
+    # Layer 1 — non-negotiable, runs first (REQ-BUILD-0022/0060/0070 step 2).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Static prohibition scan (BLOCKER on any hit)
+        run: python tools/prohibition_gate.py .
+
+  unit:
+    # Gate self-tests prove all enforcement layers catch known-bad inputs.
+    needs: prohibition-gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dev deps from lock
+        run: pip install -r requirements-dev.txt
+      - name: Unit tests (incl. prohibition-gate self-tests)
+        run: pytest -q
+
+  engine:
+    # Build the pinned engine; selftest + reproduce are preconditions to use
+    # (REQ-EVID-0043). Added in CI once the engine-build action is wired.
+    needs: prohibition-gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Engine build + selftest + reproduce
+        run: echo "engine-build stage wired in Stage 0 integration (see tools/engine_build.py)"

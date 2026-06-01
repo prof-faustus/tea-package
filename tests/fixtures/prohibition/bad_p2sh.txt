@@ -1,0 +1,2 @@
+Known-bad fixture (TEST-BUILD-0002): a pay-to-script-hash locking script.
+locking = [OP_HASH160, push20(script_hash), OP_EQUAL]   # P2SH template, prohibited

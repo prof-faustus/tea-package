@@ -1,0 +1,2 @@
+Known-bad fixture (TEST-BUILD-0001): a builder that emits a data output.
+script = builder.add_output(OP_RETURN, payload_bytes)  # prohibited null-data output
