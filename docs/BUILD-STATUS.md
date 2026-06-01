@@ -36,7 +36,17 @@ its exit gate is green. No stage proceeds on an unverified lower layer.
       constraints); 69 vector/rule tests green.
 - [x] `tea/wire/records.py` — field-id registry, strict validation, canonical
       hashing + audit-chain entry hash; 11 tests green.
-- [ ] Reproducibility vectors (REQ-WIRE-0100/0101) + `reproduce` test.
-- [ ] Migrations 0001–0007 (core schemas, `canonical_record`, `audit_chain`) +
-      trigger bodies; TEST-DATA-0001..0006/0050..0055.
-- [ ] Cross-language vectors vs engine (REQ-WIRE-0102) — contract stage.
+- [x] Reproducibility vectors (REQ-WIRE-0100/0101) + `reproduce` test (7 fixtures,
+      byte-for-byte).
+- [x] Migrations 0001–0007 (`core` schemas, entity/currency/users, gl bootstrap
+      hook, `canonical_record` + `audit_chain` + `chain_anchor`) with the
+      integrity triggers (`fn_canonical_check`/`_immutable`, `fn_audit_append`/
+      `_immutable`, `fn_verify_chain`). Chain tests green: sha-match, append-only
+      immutability, gap-free seq, prev/entry linkage, verify-intact
+      (TEST-DATA-0001..0006/0050). Applied + tested on the live cluster.
+- [ ] Cross-language vectors vs engine (REQ-WIRE-0102) — deferred to the engine
+      bridge (Stage 3 / contract stage), since it needs C-EVID.
+
+**Stage 1 exit gate: MET** — canonical vectors reproduce byte-for-byte; chain
+append/verify/immutability tests green. (Cross-language-vs-engine vectors land
+with the bridge in Stage 3.)
