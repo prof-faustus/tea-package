@@ -60,6 +60,28 @@ BEGIN
     EXCEPTION WHEN OTHERS THEN rejected := true; END;
     IF NOT rejected THEN RAISE EXCEPTION 'TEST-FAIL: COUNTERPARTY cert without counterparty_id not rejected'; END IF;
 
+    -- ---- Layer-3 guard bound to wallet.utxo: a forbidden script cannot persist ----
+    DECLARE w_id BIGINT; a_id BIGINT;
+    BEGIN
+        INSERT INTO wallet.wallet(entity_id, label, hd_root_ref, network)
+            VALUES (e_id, 'w', 'custody://hd', 'REGTEST') RETURNING id INTO w_id;
+        INSERT INTO wallet.address(wallet_id, entity_id, derivation_path, pubkey, address_text, purpose)
+            VALUES (w_id, e_id, 'm/0/0', decode('02' || repeat('11',32),'hex'), 'mAddrCA', 'RECEIVE')
+            RETURNING id INTO a_id;
+        -- allowed P2PKH locking script persists
+        INSERT INTO wallet.utxo(entity_id, wallet_id, address_id, txid, output_index, satoshis, locking_script, asset_kind)
+            VALUES (e_id, w_id, a_id, decode(repeat('33',32),'hex'), 0, 1000,
+                    decode('76a914' || repeat('11',20) || '88ac','hex'), 'BSV');
+        -- forbidden data-carrier locking script is rejected by the trigger
+        rejected := false;
+        BEGIN
+            INSERT INTO wallet.utxo(entity_id, wallet_id, address_id, txid, output_index, satoshis, locking_script, asset_kind)
+                VALUES (e_id, w_id, a_id, decode(repeat('44',32),'hex'), 1, 1000,
+                        decode('6a04deadbeef','hex'), 'BSV');
+        EXCEPTION WHEN OTHERS THEN rejected := true; END;
+        IF NOT rejected THEN RAISE EXCEPTION 'TEST-FAIL: forbidden utxo locking script persisted'; END IF;
+    END;
+
     RAISE NOTICE 'ALL-CA-TESTS-PASSED entity=%', e_id;
 END;
 $$;

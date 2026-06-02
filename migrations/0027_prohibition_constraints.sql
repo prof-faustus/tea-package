@@ -33,10 +33,20 @@ BEGIN
 END;
 $$;
 
--- The BEFORE INSERT/UPDATE triggers binding this guard to every locking-script-
--- bearing table (wallet.utxo and the cert/anchor outpoint mirrors) are attached
--- when those tables land (migrations 0011+). The function is the enforcement core
--- and is independently tested here (tests/sql/test_prohibition_guard.sql).
+-- Bind the guard to wallet.utxo.locking_script: a forbidden locking script cannot
+-- be persisted even if application code is bypassed (REQ-DATA-0189). Other
+-- locking-script-bearing tables attach the same guard when they land.
+CREATE OR REPLACE FUNCTION wallet.fn_utxo_script_guard() RETURNS trigger
+LANGUAGE plpgsql AS $$
+BEGIN
+    PERFORM wallet.fn_assert_allowed_script(NEW.locking_script);
+    RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER trg_utxo_script_guard
+    BEFORE INSERT OR UPDATE ON wallet.utxo
+    FOR EACH ROW EXECUTE FUNCTION wallet.fn_utxo_script_guard();
 
 INSERT INTO core.schema_migration(version) VALUES ('0027_prohibition_constraints');
 COMMIT;
