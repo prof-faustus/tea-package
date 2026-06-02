@@ -14,8 +14,8 @@ PSQL="${PGBIN}/psql -v ON_ERROR_STOP=1 -h 127.0.0.1 -p ${PORT} -U tea -d tea"
 echo "=== clean slate ==="
 $PSQL -q -c "DROP SCHEMA IF EXISTS core,evid,wallet,msg,authz,ops,gl CASCADE;"
 
-echo "=== apply migrations (0001-0010, 0019-0023) ==="
-for n in 0001 0002 0003 0004 0005 0006 0007 0008 0009 0010 0019 0020 0021 0022 0023; do
+echo "=== apply migrations (0001-0010, 0019-0023, 0025, 0027) ==="
+for n in 0001 0002 0003 0004 0005 0006 0007 0008 0009 0010 0019 0020 0021 0022 0023 0025 0027; do
   f=$(ls "${REPO}/migrations/${n}"_*.sql)
   $PSQL -q -f "$f"
   echo "  applied $(basename "$f")"
@@ -28,4 +28,6 @@ echo "=== chain trigger tests ==="
 $PSQL -f "${REPO}/tests/sql/test_chain.sql"
 echo "=== derivation persistence tests ==="
 $PSQL -f "${REPO}/tests/sql/test_derivation_persistence.sql"
+echo "=== certificate + prohibition-guard tests ==="
+$PSQL -f "${REPO}/tests/sql/test_ca.sql"
 echo "MIGRATE-AND-TEST: OK"
