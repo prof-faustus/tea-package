@@ -14,8 +14,8 @@ PSQL="${PGBIN}/psql -v ON_ERROR_STOP=1 -h 127.0.0.1 -p ${PORT} -U tea -d tea"
 echo "=== clean slate ==="
 $PSQL -q -c "DROP SCHEMA IF EXISTS core,evid,wallet,msg,authz,ops,gl CASCADE;"
 
-echo "=== apply migrations (0001-0012, 0019-0023, 0025, 0027) ==="
-for n in 0001 0002 0003 0004 0005 0006 0007 0008 0009 0010 0011 0012 0019 0020 0021 0022 0023 0025 0027; do
+echo "=== apply full migration set (0001-0027; 0016 grants last) ==="
+for n in 0001 0002 0003 0004 0005 0006 0007 0008 0009 0010 0011 0012 0013 0014 0015 0018 0019 0020 0021 0022 0023 0024 0025 0027 0016; do
   f=$(ls "${REPO}/migrations/${n}"_*.sql)
   $PSQL -q -f "$f"
   echo "  applied $(basename "$f")"
