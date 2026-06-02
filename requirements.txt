@@ -11,3 +11,7 @@
 # pulls psycopg2 + python-dateutil + strenum + toml transitively.
 python-accounting==1.0.1
 SQLAlchemy==2.0.50
+
+# Stage 6 — REST API (section 03). FastAPI + httpx (TestClient).
+fastapi==0.136.3
+httpx==0.28.1
